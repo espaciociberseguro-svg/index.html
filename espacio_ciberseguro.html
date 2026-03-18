@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Espacio Ciberseguro – Simulación Familiar</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --sky: #1a73e8;
+    --sky-light: #e8f0fe;
+    --mint: #00b894;
+    --mint-light: #d4f5ec;
+    --coral: #e17055;
+    --coral-light: #fde8e3;
+    --gold: #fdcb6e;
+    --gold-light: #fff8e7;
+    --purple: #6c5ce7;
+    --purple-light: #ede9ff;
+    --red: #d63031;
+    --red-light: #fdecea;
+    --dark: #1e272e;
+    --gray: #636e72;
+    --light: #f8f9fa;
+    --white: #ffffff;
+    --shadow: 0 4px 24px rgba(0,0,0,0.10);
+    --shadow-md: 0 8px 40px rgba(0,0,0,0.14);
+    --radius: 18px;
+    --radius-sm: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #f0f4ff;
+    color: var(--dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── TOP NAV ── */
+  .topbar {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    padding: 0 24px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.3);
+  }
+  .topbar-inner {
+    max-width: 1100px; margin: auto;
+    display: flex; align-items: center; gap: 16px;
+    padding: 14px 0;
+  }
+  .logo-text { font-family: 'Fredoka One', cursive; font-size: 1.4rem; color: #fff; letter-spacing: 0.5px; }
+  .logo-text span { color: var(--gold); }
+  .nav-tabs {
+    display: flex; gap: 4px; margin-left: auto; flex-wrap: wrap;
+  }
+  .nav-tab {
+    background: rgba(255,255,255,0.08); border: none; border-radius: 8px;
+    color: rgba(255,255,255,0.7); font-family: 'Nunito', sans-serif;
+    font-size: 0.8rem; font-weight: 700; padding: 8px 14px;
+    cursor: pointer; transition: all .2s;
+  }
+  .nav-tab:hover { background: rgba(255,255,255,0.18); color: #fff; }
+  .nav-tab.active { background: var(--gold); color: #1a1a2e; }
+
+  /* ── SECTIONS ── */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .container { max-width: 1000px; margin: auto; padding: 36px 20px; }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+    text-align: center; padding: 64px 24px 48px;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 20% 80%, rgba(253,203,110,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(26,115,232,0.15) 0%, transparent 60%);
+  }
+  .hero-emoji { font-size: 4.5rem; display: block; margin-bottom: 16px; position: relative; z-index:1; animation: bounce 2s ease-in-out infinite; }
+  @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  .hero h1 { font-family: 'Fredoka One', cursive; font-size: clamp(2rem, 5vw, 3.2rem); color: #fff; position: relative; z-index:1; }
+  .hero h1 span { color: var(--gold); }
+  .hero p { color: rgba(255,255,255,0.75); font-size: 1.1rem; max-width: 600px; margin: 14px auto 0; position: relative; z-index:1; line-height: 1.7; }
+  .hero-badges { display: flex; gap: 12px; justify-content: center; margin-top: 24px; flex-wrap: wrap; position: relative; z-index:1; }
+  .badge { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 8px 18px; border-radius: 50px; font-size: 0.85rem; font-weight: 700; }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px;
+  }
+  .card-header {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 20px;
+    padding-bottom: 16px; border-bottom: 2px solid var(--light);
+  }
+  .card-icon { font-size: 2.2rem; flex-shrink: 0; }
+  .card-title { font-family: 'Fredoka One', cursive; font-size: 1.5rem; }
+
+  /* ── INTRO SECTION ── */
+  .intro-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 20px; }
+  .intro-box {
+    border-radius: var(--radius-sm); padding: 20px;
+    text-align: center;
+  }
+  .intro-box .ibox-icon { font-size: 2.4rem; margin-bottom: 10px; }
+  .intro-box h3 { font-weight: 800; font-size: 1rem; margin-bottom: 6px; }
+  .intro-box p { font-size: 0.88rem; color: var(--gray); line-height: 1.6; }
+
+  /* ── ATTACK NAVIGATOR ── */
+  .attack-nav { display: flex; gap: 10px; margin-bottom: 28px; flex-wrap: wrap; }
+  .attack-btn {
+    flex: 1; min-width: 130px; padding: 14px 10px; border: none; border-radius: var(--radius-sm);
+    font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 800;
+    cursor: pointer; transition: all .2s; text-align: center;
+  }
+  .attack-btn .ab-icon { font-size: 1.8rem; display: block; margin-bottom: 4px; }
+  .attack-btn:not(.active) { background: var(--light); color: var(--gray); }
+  .attack-btn.active { transform: translateY(-3px); box-shadow: var(--shadow-md); color: #fff; }
+  .attack-btn[data-attack="phishing"].active { background: linear-gradient(135deg, #1a73e8, #0056b3); }
+  .attack-btn[data-attack="vishing"].active  { background: linear-gradient(135deg, #e17055, #c0392b); }
+  .attack-btn[data-attack="smishing"].active { background: linear-gradient(135deg, #00b894, #00796b); }
+  .attack-btn[data-attack="deepfake"].active { background: linear-gradient(135deg, #6c5ce7, #4a3ab5); }
+
+  .attack-panel { display: none; }
+  .attack-panel.active { display: block; }
+
+  /* ── SCENARIO CARD ── */
+  .scenario-card {
+    border-radius: var(--radius); padding: 24px; margin-bottom: 20px;
+    border: 2px solid transparent;
+  }
+  .scenario-card.email-style {
+    background: #fff; border-color: #e0e0e0;
+    font-family: 'Courier New', monospace; font-size: 0.9rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .email-header { background: #f5f5f5; margin: -24px -24px 16px; padding: 14px 20px; border-radius: 16px 16px 0 0; font-size: 0.82rem; color: #555; }
+  .email-from { color: #1a73e8; font-weight: bold; }
+  .email-subject { font-weight: bold; font-size: 1rem; margin: 8px 0 12px; color: #222; }
+  .email-body { line-height: 1.8; color: #333; }
+  .fake-link { color: #1a73e8; text-decoration: underline; cursor: pointer; font-weight: bold; background: #fff3cd; padding: 1px 4px; border-radius: 3px; }
+  .fake-link::after { content: ' ⚠️'; font-size: 0.75rem; }
+
+  .phone-card {
+    background: linear-gradient(145deg, #1e272e, #2d3436);
+    border-radius: 24px; padding: 28px; color: #fff; max-width: 380px; margin: 0 auto 20px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  }
+  .phone-top { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .phone-avatar { width: 48px; height: 48px; background: var(--coral); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+  .phone-number { font-size: 0.85rem; color: rgba(255,255,255,0.6); }
+  .phone-name { font-weight: 800; font-size: 1.1rem; }
+  .phone-dialog { background: rgba(255,255,255,0.07); border-radius: 12px; padding: 16px; line-height: 1.7; font-size: 0.9rem; }
+  .dialog-quote { color: var(--gold); font-style: italic; margin-bottom: 6px; font-size: 0.8rem; }
+
+  .sms-card {
+    background: #f0f0f0; border-radius: 20px; padding: 24px; max-width: 380px; margin: 0 auto 20px;
+  }
+  .sms-bubble {
+    background: #e2e2e2; border-radius: 18px 18px 18px 4px;
+    padding: 14px 18px; font-size: 0.9rem; line-height: 1.7; color: #222;
+    position: relative; max-width: 90%;
+  }
+  .sms-sender { font-size: 0.75rem; color: #888; margin-bottom: 6px; font-weight: 700; }
+
+  .deepfake-card {
+    background: linear-gradient(135deg, #1a1a2e, #2d1b69);
+    border-radius: var(--radius); padding: 28px; color: #fff; margin-bottom: 20px;
+  }
+  .video-frame {
+    background: #000; border-radius: 12px; padding: 0; margin: 16px 0;
+    aspect-ratio: 16/9; max-width: 480px; margin: 16px auto;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid rgba(255,255,255,0.15); overflow: hidden; position: relative;
+  }
+  .video-frame-inner { text-align: center; }
+  .video-glitch { font-size: 3rem; animation: glitch 1.5s infinite; }
+  @keyframes glitch {
+    0%,100% { transform: translate(0); filter: none; }
+    20% { transform: translate(-2px, 1px); filter: hue-rotate(90deg); }
+    40% { transform: translate(2px, -1px); filter: hue-rotate(-90deg); }
+    60% { transform: translate(-1px, 2px); }
+  }
+  .video-label { color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-top: 8px; }
+
+  /* ── ALERT SIGNALS ── */
+  .alert-signals { background: var(--red-light); border-left: 4px solid var(--red); border-radius: var(--radius-sm); padding: 16px 20px; margin: 16px 0; }
+  .alert-signals h4 { color: var(--red); font-size: 0.95rem; margin-bottom: 8px; }
+  .alert-signals li { font-size: 0.88rem; margin-left: 20px; margin-bottom: 4px; line-height: 1.5; color: #333; }
+
+  .tip-box { background: var(--mint-light); border-left: 4px solid var(--mint); border-radius: var(--radius-sm); padding: 16px 20px; margin: 16px 0; }
+  .tip-box h4 { color: #00695c; font-size: 0.95rem; margin-bottom: 8px; }
+  .tip-box li { font-size: 0.88rem; margin-left: 20px; margin-bottom: 4px; line-height: 1.5; }
+
+  /* ── INTERACTIVE QUESTION ── */
+  .question-card {
+    background: linear-gradient(135deg, var(--sky-light), #d0e8ff);
+    border-radius: var(--radius); padding: 24px; margin: 20px 0;
+  }
+  .question-text { font-weight: 800; font-size: 1.05rem; margin-bottom: 16px; color: #0d47a1; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option-btn {
+    background: #fff; border: 2px solid #c5d9f7; border-radius: var(--radius-sm);
+    padding: 12px 18px; text-align: left; font-family: 'Nunito', sans-serif;
+    font-size: 0.92rem; font-weight: 700; cursor: pointer; transition: all .2s; color: #1a237e;
+  }
+  .option-btn:hover { border-color: var(--sky); background: var(--sky-light); transform: translateX(4px); }
+  .option-btn.correct { background: var(--mint-light); border-color: var(--mint); color: #004d40; }
+  .option-btn.wrong { background: var(--red-light); border-color: var(--red); color: var(--red); }
+  .option-btn.neutral-reveal { background: #f5f5f5; border-color: #ccc; color: var(--gray); }
+  .answer-reveal {
+    margin-top: 14px; padding: 14px 18px; border-radius: var(--radius-sm);
+    font-size: 0.9rem; line-height: 1.6; display: none;
+  }
+  .answer-reveal.show { display: block; }
+  .answer-reveal.good { background: var(--mint-light); color: #004d40; }
+  .answer-reveal.bad  { background: var(--red-light); color: #b71c1c; }
+
+  /* ── AGE VERSIONS ── */
+  .age-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .age-tab {
+    background: var(--light); border: none; border-radius: 50px;
+    padding: 8px 18px; font-family: 'Nunito', sans-serif; font-size: 0.85rem;
+    font-weight: 800; cursor: pointer; color: var(--gray); transition: all .2s;
+  }
+  .age-tab.active { background: var(--dark); color: #fff; }
+  .age-content { display: none; }
+  .age-content.active { display: block; }
+  .age-block { border-radius: var(--radius-sm); padding: 18px; font-size: 0.9rem; line-height: 1.7; }
+  .age-block.kids  { background: var(--gold-light); border-left: 4px solid var(--gold); }
+  .age-block.family{ background: var(--sky-light); border-left: 4px solid var(--sky); }
+  .age-block.senior{ background: var(--mint-light); border-left: 4px solid var(--mint); }
+
+  /* ── DEEPFAKE SIGNALS ── */
+  .df-signals { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+  .df-signal {
+    background: rgba(108,92,231,0.1); border: 1px solid rgba(108,92,231,0.25);
+    border-radius: var(--radius-sm); padding: 16px; text-align: center;
+  }
+  .df-signal .dfs-icon { font-size: 2rem; margin-bottom: 6px; }
+  .df-signal h4 { font-size: 0.85rem; font-weight: 800; color: var(--purple); margin-bottom: 4px; }
+  .df-signal p { font-size: 0.8rem; color: var(--gray); line-height: 1.5; }
+
+  /* ── PROTECTION GUIDE ── */
+  .prot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-top: 20px; }
+  .prot-card {
+    border-radius: var(--radius-sm); padding: 20px;
+    border-top: 4px solid;
+  }
+  .prot-card h3 { font-weight: 800; font-size: 0.95rem; margin: 10px 0 8px; }
+  .prot-card li { font-size: 0.85rem; margin-left: 18px; margin-bottom: 4px; line-height: 1.5; color: #333; }
+
+  /* ── QUIZ ── */
+  .quiz-progress { background: #e0e0e0; border-radius: 50px; height: 8px; margin-bottom: 24px; overflow: hidden; }
+  .quiz-bar { background: linear-gradient(90deg, var(--mint), var(--sky)); height: 100%; border-radius: 50px; transition: width 0.4s ease; width: 0%; }
+  .quiz-q { font-weight: 800; font-size: 1.05rem; margin-bottom: 16px; }
+  .quiz-num { font-size: 0.8rem; color: var(--gray); font-weight: 700; margin-bottom: 8px; }
+  .quiz-opts { display: flex; flex-direction: column; gap: 10px; }
+  .quiz-opt {
+    background: var(--light); border: 2px solid #ddd; border-radius: var(--radius-sm);
+    padding: 12px 18px; text-align: left; font-family: 'Nunito', sans-serif;
+    font-size: 0.92rem; font-weight: 700; cursor: pointer; transition: all .2s; color: var(--dark);
+  }
+  .quiz-opt:hover:not(:disabled) { border-color: var(--sky); background: var(--sky-light); transform: translateX(4px); }
+  .quiz-opt:disabled { cursor: default; }
+  .quiz-opt.q-correct { background: var(--mint-light); border-color: var(--mint); color: #004d40; }
+  .quiz-opt.q-wrong   { background: var(--red-light); border-color: var(--red); color: var(--red); }
+  .quiz-feedback { margin-top: 12px; padding: 12px 16px; border-radius: var(--radius-sm); font-size: 0.9rem; line-height: 1.6; display: none; }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok  { background: var(--mint-light); color: #004d40; }
+  .quiz-feedback.nok { background: var(--red-light); color: #b71c1c; }
+  .quiz-nav { margin-top: 20px; display: flex; justify-content: flex-end; }
+  .btn { background: var(--sky); color: #fff; border: none; border-radius: var(--radius-sm); padding: 12px 28px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.95rem; cursor: pointer; transition: all .2s; }
+  .btn:hover { background: #1558b0; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(26,115,232,0.3); }
+  .btn:disabled { background: #ccc; cursor: default; transform: none; box-shadow: none; }
+
+  /* ── SCORE CARD ── */
+  .score-card { text-align: center; padding: 40px 20px; }
+  .score-emoji { font-size: 5rem; display: block; margin-bottom: 16px; }
+  .score-big { font-family: 'Fredoka One', cursive; font-size: 4rem; }
+  .score-label { font-size: 1.1rem; color: var(--gray); margin-bottom: 24px; }
+  .score-level { display: inline-block; padding: 10px 28px; border-radius: 50px; font-weight: 900; font-size: 1.1rem; margin-bottom: 24px; }
+  .score-breakdown { text-align: left; max-width: 500px; margin: 0 auto 28px; }
+  .sba { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+
+  /* ── CIERRE ── */
+  .closing-hero {
+    background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+    border-radius: var(--radius); padding: 48px 32px; text-align: center; color: #fff; margin-bottom: 24px;
+  }
+  .closing-hero h2 { font-family: 'Fredoka One', cursive; font-size: 2rem; margin-bottom: 14px; color: var(--gold); }
+  .closing-hero p { font-size: 1rem; line-height: 1.8; max-width: 600px; margin: 0 auto 20px; color: rgba(255,255,255,0.85); }
+  .closing-pillars { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-top: 28px; }
+  .closing-pillar { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius-sm); padding: 20px; text-align: center; }
+  .closing-pillar .cp-icon { font-size: 2rem; margin-bottom: 8px; }
+  .closing-pillar p { font-size: 0.85rem; color: rgba(255,255,255,0.75); line-height: 1.5; }
+
+  .firma {
+    text-align: center; padding: 28px;
+    background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow);
+    margin-bottom: 24px;
+  }
+  .firma-logo { font-family: 'Fredoka One', cursive; font-size: 1.8rem; color: var(--dark); letter-spacing: 1px; }
+  .firma-logo span { color: var(--sky); }
+  .firma p { color: var(--gray); font-size: 0.85rem; margin-top: 6px; }
+
+  /* ── SECTION TITLES ── */
+  .section-heading { font-family: 'Fredoka One', cursive; font-size: 1.8rem; margin-bottom: 8px; }
+  .section-sub { color: var(--gray); font-size: 0.95rem; margin-bottom: 28px; line-height: 1.6; }
+
+  /* ── UTILS ── */
+  .text-small { font-size: 0.88rem; color: var(--gray); line-height: 1.6; }
+  .mt-8  { margin-top: 8px; }
+  .mt-16 { margin-top: 16px; }
+  .mt-24 { margin-top: 24px; }
+  .mb-16 { margin-bottom: 16px; }
+
+  @media (max-width: 600px) {
+    .topbar-inner { flex-wrap: wrap; }
+    .nav-tabs { gap: 3px; }
+    .nav-tab { font-size: 0.72rem; padding: 6px 10px; }
+    .attack-btn { font-size: 0.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topbar">
+  <div class="topbar-inner">
+    <div class="logo-text">🛡️ Espacio <span>Ciberseguro</span></div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="showSection('intro')">Inicio</button>
+      <button class="nav-tab" onclick="showSection('attacks')">Ataques</button>
+      <button class="nav-tab" onclick="showSection('deepfake')">Deepfakes</button>
+      <button class="nav-tab" onclick="showSection('guia')">Guía 🛡️</button>
+      <button class="nav-tab" onclick="showSection('quiz')">Quiz 🎯</button>
+      <button class="nav-tab" onclick="showSection('cierre')">Cierre 💚</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════ -->
+<!-- SECCIÓN 1: INTRODUCCIÓN                -->
+<!-- ════════════════════════════════════════ -->
+<section id="intro" class="section active">
+  <div class="hero">
+    <span class="hero-emoji">🛡️</span>
+    <h1>Protejamos a nuestra <span>familia</span> en línea</h1>
+    <p>Una simulación interactiva para aprender a reconocer los engaños más comunes en internet — juntos, paso a paso.</p>
+    <div class="hero-badges">
+      <span class="badge">👶 Niños desde 8 años</span>
+      <span class="badge">👨‍👩‍👧 Familias</span>
+      <span class="badge">👵 Adultos mayores</span>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">🌐</div>
+        <div>
+          <div class="card-title" style="color:var(--sky)">¿Qué es la Ciberseguridad?</div>
+          <div class="text-small">Y por qué toda la familia debe conocerla</div>
+        </div>
+      </div>
+      <p style="line-height:1.8;margin-bottom:16px;">
+        La <strong>ciberseguridad</strong> es el conjunto de hábitos y herramientas que usamos para protegernos en el mundo digital. Así como en la vida real aprendemos a <em>no abrir la puerta a desconocidos</em>, en internet aprendemos a <em>no responder mensajes o llamadas sospechosas</em>.
+      </p>
+      <div class="intro-grid">
+        <div class="intro-box" style="background:#e8f0fe;">
+          <div class="ibox-icon">🚪</div>
+          <h3>En la vida real...</h3>
+          <p>Si un extraño toca tu puerta y dice ser del banco, ¿le abrirías de inmediato? Probablemente no. Primero verificarías.</p>
+        </div>
+        <div class="intro-box" style="background:#fde8e3;">
+          <div class="ibox-icon">📱</div>
+          <h3>En el mundo digital...</h3>
+          <p>Si recibes un mensaje urgente del "banco" pidiéndote tus datos, la respuesta inteligente es la misma: <strong>verificar primero</strong>.</p>
+        </div>
+        <div class="intro-box" style="background:#d4f5ec;">
+          <div class="ibox-icon">👨‍👩‍👧</div>
+          <h3>¿Por qué en familia?</h3>
+          <p>Los delincuentes saben que niños y adultos mayores son más vulnerables. Aprender juntos hace a toda la familia más segura.</p>
+        </div>
+        <div class="intro-box" style="background:#fff8e7;">
+          <div class="ibox-icon">🧠</div>
+          <h3>La mejor defensa</h3>
+          <p>No necesitás ser experto en tecnología. Solo necesitás aprender a <strong>pausar y pensar</strong> antes de actuar.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="border-top: 4px solid var(--coral);">
+      <div class="card-header">
+        <div class="card-icon">⚠️</div>
+        <div>
+          <div class="card-title" style="color:var(--coral)">¿Qué aprenderás aquí?</div>
+        </div>
+      </div>
+      <p style="margin-bottom:16px;line-height:1.8;">Vamos a explorar los <strong>4 tipos de ataques más comunes</strong> que afectan a personas de todas las edades:</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+        <div style="background:#e8f0fe;padding:16px;border-radius:10px;display:flex;align-items:center;gap:12px;">
+          <span style="font-size:1.8rem;">📧</span><div><strong style="color:var(--sky)">Phishing</strong><br/><small>Correos engañosos</small></div>
+        </div>
+        <div style="background:#fde8e3;padding:16px;border-radius:10px;display:flex;align-items:center;gap:12px;">
+          <span style="font-size:1.8rem;">📞</span><div><strong style="color:var(--coral)">Vishing</strong><br/><small>Llamadas falsas</small></div>
+        </div>
+        <div style="background:#d4f5ec;padding:16px;border-radius:10px;display:flex;align-items:center;gap:12px;">
+          <span style="font-size:1.8rem;">💬</span><div><strong style="color:var(--mint)">Smishing</strong><br/><small>SMS y WhatsApp falsos</small></div>
+        </div>
+        <div style="background:#ede9ff;padding:16px;border-radius:10px;display:flex;align-items:center;gap:12px;">
+          <span style="font-size:1.8rem;">🤖</span><div><strong style="color:var(--purple)">Deepfakes</strong><br/><small>Videos y audios falsos con IA</small></div>
+        </div>
+      </div>
+      <div style="margin-top:24px;text-align:center;">
+        <button class="btn" onclick="showSection('attacks');scrollTo(0,0)">¡Comenzar simulación! 🚀</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- SECCIÓN 2: ATAQUES                     -->
+<!-- ════════════════════════════════════════ -->
+<section id="attacks" class="section">
+  <div class="container">
+    <h2 class="section-heading">⚡ Simulación de Ataques</h2>
+    <p class="section-sub">Hacé clic en cada tipo de ataque para ver el escenario, aprender a reconocerlo y saber cómo protegerte.</p>
+
+    <!-- Attack navigator -->
+    <div class="attack-nav">
+      <button class="attack-btn active" data-attack="phishing" onclick="showAttack('phishing')">
+        <span class="ab-icon">📧</span>Phishing
+      </button>
+      <button class="attack-btn" data-attack="vishing" onclick="showAttack('vishing')">
+        <span class="ab-icon">📞</span>Vishing
+      </button>
+      <button class="attack-btn" data-attack="smishing" onclick="showAttack('smishing')">
+        <span class="ab-icon">💬</span>Smishing
+      </button>
+      <button class="attack-btn" data-attack="deepfake" onclick="showAttack('deepfake'); showSection('deepfake');">
+        <span class="ab-icon">🤖</span>Deepfakes
+      </button>
+    </div>
+
+    <!-- ─── PHISHING ─── -->
+    <div id="panel-phishing" class="attack-panel active">
+      <div class="card" style="border-top:4px solid var(--sky)">
+        <div class="card-header">
+          <div class="card-icon">📧</div>
+          <div>
+            <div class="card-title" style="color:var(--sky)">Phishing — Correo Electrónico Falso</div>
+            <div class="text-small">El tipo de ataque más común del mundo. Millones de personas caen cada año.</div>
+          </div>
+        </div>
+
+        <h3 style="margin-bottom:12px;color:#555;">🎬 Escenario: Un correo "urgente" de tu banco</h3>
+        <div class="scenario-card email-style">
+          <div class="email-header">
+            <div>📨 <strong>De:</strong> <span class="email-from">seguridad@banco-nacional-cl1ente.com</span></div>
+            <div style="margin-top:4px;">📅 <strong>Para:</strong> tucuenta@correo.com</div>
+          </div>
+          <div class="email-subject">⚠️ URGENTE: Su cuenta ha sido suspendida temporalmente</div>
+          <div class="email-body">
+            Estimado cliente,<br/><br/>
+            Hemos detectado actividad <strong>inusual</strong> en su cuenta bancaria. Por seguridad, su acceso ha sido suspendido temporalmente.<br/><br/>
+            Para reactivar su cuenta y evitar el cierre definitivo en las próximas <strong>24 horas</strong>, debe verificar su información de inmediato haciendo clic en el siguiente enlace:<br/><br/>
+            🔗 <span class="fake-link">www.banco-nacional-cl1ente-seguro.com/verificar</span><br/><br/>
+            Necesitará ingresar:<br/>
+            ✅ Número de cuenta<br/>
+            ✅ Contraseña actual<br/>
+            ✅ Número de tarjeta y CVV<br/><br/>
+            <em>Este proceso es obligatorio y confidencial. No comparta este correo.</em><br/><br/>
+            Atentamente,<br/>
+            <strong>Departamento de Seguridad Bancaria</strong>
+          </div>
+        </div>
+
+        <!-- Pregunta interactiva -->
+        <div class="question-card">
+          <div class="question-text">🤔 ¿Qué harías al recibir este correo?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answerQuestion(this,'wrong','ph')">A) Hago clic en el enlace de inmediato — mi cuenta está en riesgo 😨</button>
+            <button class="option-btn" onclick="answerQuestion(this,'wrong','ph')">B) Llamo al número que aparece en el correo para confirmar</button>
+            <button class="option-btn" onclick="answerQuestion(this,'correct','ph')">C) NO hago clic. Llamo a mi banco usando el número oficial de mi tarjeta 📞</button>
+          </div>
+          <div class="answer-reveal good" id="ph-reveal">
+            ✅ <strong>¡Correcto!</strong> La respuesta C es la segura. Los bancos NUNCA piden tu contraseña o datos de tarjeta por correo. Siempre llamá al número que está al reverso de tu tarjeta, no a los que aparecen en el correo sospechoso.
+          </div>
+        </div>
+
+        <!-- Señales de alerta -->
+        <div class="alert-signals">
+          <h4>🚨 Señales de alerta en este correo:</h4>
+          <ul>
+            <li>El dominio del correo tiene errores: <strong>cl1ente</strong> (el número 1 en lugar de la letra i)</li>
+            <li>Crea <strong>urgencia artificial</strong>: "24 horas", "cierre definitivo"</li>
+            <li>Pide datos <strong>sumamente sensibles</strong>: CVV, contraseña</li>
+            <li>El enlace no corresponde al sitio oficial del banco real</li>
+            <li>Lenguaje genérico: dice "Estimado cliente" en lugar de tu nombre</li>
+          </ul>
+        </div>
+
+        <!-- Recomendaciones -->
+        <div class="tip-box">
+          <h4>✅ ¿Qué hacer?</h4>
+          <ul>
+            <li>Nunca hagas clic en enlaces de correos urgentes</li>
+            <li>Abre el sitio del banco escribiéndolo tú mismo en el navegador</li>
+            <li>Llama al número oficial de tu banco (reverso de la tarjeta)</li>
+            <li>Reporta el correo como "phishing" o "spam"</li>
+          </ul>
+        </div>
+
+        <!-- Versiones por edad -->
+        <h3 style="margin:20px 0 12px;">🎯 Explicación adaptada por edad</h3>
+        <div class="age-tabs" id="ph-ages">
+          <button class="age-tab active" onclick="showAge('ph','kids')">👶 Niños</button>
+          <button class="age-tab" onclick="showAge('ph','family')">👨‍👩‍👧 Familia</button>
+          <button class="age-tab" onclick="showAge('ph','senior')">👵 Adultos mayores</button>
+        </div>
+        <div id="ph-kids" class="age-content active">
+          <div class="age-block kids">
+            <strong>🍭 Para niños:</strong> Imagina que recibes una carta que dice ser de tu escuela, pero cuando la ves bien, el sello dice "escul4" con un número. ¡Es falsa! Los estafadores hacen lo mismo en internet. Si un correo te pide escribir tu contraseña o datos del banco de mamá o papá, <strong>¡contale a un adulto de confianza antes de hacer cualquier cosa!</strong> Nunca hagas clic solo.
+          </div>
+        </div>
+        <div id="ph-family" class="age-content">
+          <div class="age-block family">
+            <strong>🏠 Para familias:</strong> Creen una regla en casa: ante cualquier correo o mensaje urgente que pida datos bancarios, <strong>nadie hace clic sin antes consultarlo con otro miembro de la familia</strong>. Muéstrenle a sus hijos los errores típicos (dominios falsos, urgencia exagerada). Practiquen juntos identificar correos sospechosos. El phishing más efectivo llega cuando estamos solos y apurados.
+          </div>
+        </div>
+        <div id="ph-senior" class="age-content">
+          <div class="age-block senior">
+            <strong>👵 Para adultos mayores:</strong> Recuerde: <strong>su banco NUNCA le pedirá su clave por correo electrónico</strong>. Si llega un correo urgente sobre su cuenta, lo mejor es apagarlo y llamar directamente al banco con el teléfono que tiene en su tarjeta de crédito o débito. Si tiene dudas, pida ayuda a un familiar. No hay ningún problema en no responder y verificar primero.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── VISHING ─── -->
+    <div id="panel-vishing" class="attack-panel">
+      <div class="card" style="border-top:4px solid var(--coral)">
+        <div class="card-header">
+          <div class="card-icon">📞</div>
+          <div>
+            <div class="card-title" style="color:var(--coral)">Vishing — Llamada Telefónica Falsa</div>
+            <div class="text-small">Los atacantes usan la voz para generar confianza y urgencia. Es más difícil de detectar que el correo.</div>
+          </div>
+        </div>
+
+        <h3 style="margin-bottom:12px;color:#555;">🎬 Escenario: "Soy del soporte técnico de su banco"</h3>
+        <div class="phone-card">
+          <div class="phone-top">
+            <div class="phone-avatar">📞</div>
+            <div>
+              <div class="phone-name">Llamada entrante</div>
+              <div class="phone-number">+506 8888-1234 (número desconocido)</div>
+            </div>
+          </div>
+          <div class="phone-dialog">
+            <div class="dialog-quote">— El "agente" habla con voz profesional y segura —</div>
+            <em>"Buenos días, le llama el <strong>Departamento de Fraudes del Banco Nacional</strong>. Hemos detectado un cargo no autorizado de $350 en su tarjeta hace 10 minutos. Para cancelar este cargo y proteger su cuenta, necesito verificar su identidad.</em><br/><br/>
+            <em>¿Me podría confirmar el número completo de su tarjeta y el código de 3 dígitos al reverso? También necesitaré que me diga el código que va a llegar a su celular en unos segundos. Es urgente, el cargo se procesará en 5 minutos si no actuamos ahora."</em>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <div class="question-text">🤔 El "agente" te presiona. ¿Qué harías?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answerQuestion(this,'wrong','vs')">A) Le doy los datos rápido para cancelar el cargo antes de los 5 minutos</button>
+            <button class="option-btn" onclick="answerQuestion(this,'correct','vs')">B) Digo "voy a llamar al banco yo mismo" y cuelgo sin dar datos 📵</button>
+            <button class="option-btn" onclick="answerQuestion(this,'wrong','vs')">C) Le pregunto su nombre y número de empleado para confiar más</button>
+          </div>
+          <div class="answer-reveal good" id="vs-reveal">
+            ✅ <strong>¡Exacto!</strong> La respuesta B es la correcta. Un banco real NUNCA te pedirá el código que llega a tu celular por teléfono. Ese código es tuyo y solo tuyo. Cuelga y llama tú al número oficial.
+          </div>
+        </div>
+
+        <div class="alert-signals">
+          <h4>🚨 Señales de alerta en esta llamada:</h4>
+          <ul>
+            <li><strong>Urgencia extrema:</strong> "5 minutos", "cargo en proceso" — te impiden pensar con calma</li>
+            <li>Pide el <strong>código SMS</strong> que llega a tu teléfono (ese código es como una llave maestra)</li>
+            <li>Pide el <strong>CVV</strong> (código de 3 dígitos) — tu banco ya lo tiene, no necesita pedírtelo</li>
+            <li>Número desconocido que <em>simula</em> ser oficial (pueden falsificar el número visible)</li>
+            <li>No te da tiempo de verificar por tu cuenta</li>
+          </ul>
+        </div>
+
+        <div class="tip-box">
+          <h4>✅ ¿Qué hacer?</h4>
+          <ul>
+            <li>Cuelga la llamada sin dar ningún dato</li>
+            <li>Llama tú al banco con el número del reverso de tu tarjeta</li>
+            <li>NUNCA compartas códigos SMS/OTP por teléfono con nadie</li>
+            <li>Si sospechás, bloqueá temporalmente tu tarjeta desde la app del banco</li>
+          </ul>
+        </div>
+
+        <h3 style="margin:20px 0 12px;">🎯 Explicación adaptada por edad</h3>
+        <div class="age-tabs" id="vs-ages">
+          <button class="age-tab active" onclick="showAge('vs','kids')">👶 Niños</button>
+          <button class="age-tab" onclick="showAge('vs','family')">👨‍👩‍👧 Familia</button>
+          <button class="age-tab" onclick="showAge('vs','senior')">👵 Adultos mayores</button>
+        </div>
+        <div id="vs-kids" class="age-content active">
+          <div class="age-block kids">
+            <strong>🎮 Para niños:</strong> Imagina que alguien te llama diciendo ser el dueño de tu videojuego favorito y que tu cuenta será borrada si no les das tu contraseña ahora mismo. ¡Nadie real haría eso! Si alguien te llama al teléfono de mamá o papá pidiendo números o códigos con mucha urgencia, <strong>dile que espere y busca a un adulto de confianza de inmediato.</strong>
+          </div>
+        </div>
+        <div id="vs-family" class="age-content">
+          <div class="age-block family">
+            <strong>🏠 Para familias:</strong> Enseñen a los adultos mayores de la familia esta regla de oro: <strong>"Si llaman ellos, NO doy datos. Si llamo yo, estoy seguro."</strong> Practiquen la situación en casa de forma lúdica. Los atacantes llaman en momentos de distracción: mientras cocinan, están solos, o están cansados. Tengan el número del banco guardado en contactos para usarlo ante cualquier duda.
+          </div>
+        </div>
+        <div id="vs-senior" class="age-content">
+          <div class="age-block senior">
+            <strong>👵 Para adultos mayores:</strong> Si recibe una llamada urgente sobre su dinero o su tarjeta, recuerde: <strong>está bien colgar y llamar usted mismo</strong>. No es de mala educación. Las personas reales del banco no se ofenden si usted prefiere llamarlos directamente. Guarde el número de su banco en su teléfono con la etiqueta "MI BANCO - NÚMERO SEGURO".
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── SMISHING ─── -->
+    <div id="panel-smishing" class="attack-panel">
+      <div class="card" style="border-top:4px solid var(--mint)">
+        <div class="card-header">
+          <div class="card-icon">💬</div>
+          <div>
+            <div class="card-title" style="color:var(--mint)">Smishing — SMS o WhatsApp Falsos</div>
+            <div class="text-small">Los mensajes de texto son más difíciles de verificar y llegan directo a tu mano.</div>
+          </div>
+        </div>
+
+        <h3 style="margin-bottom:12px;color:#555;">🎬 Escenario 1: ¡Ganaste un premio!</h3>
+        <div class="sms-card">
+          <div class="sms-sender">📱 BANCO PAIS (+506 7777-9999)</div>
+          <div class="sms-bubble">
+            🎉 ¡FELICIDADES! Su número fue seleccionado para recibir <strong>₡500,000 en premios</strong>. Para reclamar HORA su premio antes de que expire en 2 horas, ingrese a:<br/><br/>
+            <span style="color:#1a73e8;text-decoration:underline;">bit.ly/banco-premios-cr ⚠️</span><br/><br/>
+            Necesita: nombre completo, número de cédula y datos de su cuenta bancaria para el depósito.
+          </div>
+          <div style="font-size:0.75rem;color:#999;margin-top:8px;">✓✓ Entregado · hace 2 min</div>
+        </div>
+
+        <h3 style="margin-bottom:12px;color:#555;margin-top:20px;">🎬 Escenario 2: Mensaje de WhatsApp de "familiar"</h3>
+        <div class="sms-card" style="background:#e9f5e9;">
+          <div class="sms-sender">💚 WhatsApp — Número desconocido: "Soy mamá, nuevo número"</div>
+          <div class="sms-bubble" style="background:#dcf8c6;">
+            Hola mi amor 💕 soy yo, tu mamá. Perdí mi celular y este es mi número nuevo por ahora. Estoy en un apuro urgente y necesito que me hagas una transferencia de ₡150,000 a esta cuenta. Te explico todo después. Es muy urgente, hazlo ya por favor 🙏😢
+          </div>
+          <div style="font-size:0.75rem;color:#999;margin-top:8px;">✓✓ Leído</div>
+        </div>
+
+        <div class="question-card">
+          <div class="question-text">🤔 ¿Cuál es la respuesta correcta en ambos casos?</div>
+          <div class="options">
+            <button class="option-btn" onclick="answerQuestion(this,'wrong','sm')">A) El del premio: hago clic para no perder ₡500,000. Es dinero real.</button>
+            <button class="option-btn" onclick="answerQuestion(this,'wrong','sm')">B) El de mamá: transfiero el dinero porque es urgente y está pidiendo ayuda.</button>
+            <button class="option-btn" onclick="answerQuestion(this,'correct','sm')">C) En ambos casos: NO actúo. Verifico llamando directamente a las personas involucradas. 📞</button>
+          </div>
+          <div class="answer-reveal good" id="sm-reveal">
+            ✅ <strong>¡Correcto!</strong> La urgencia es la herramienta principal del engaño. Ante cualquier mensaje urgente que pida dinero o datos, el primer paso es siempre <strong>verificar por otro canal</strong>. Llama directamente a tu mamá o al banco — no respondas al mismo número sospechoso.
+          </div>
+        </div>
+
+        <div class="alert-signals">
+          <h4>🚨 Señales de alerta:</h4>
+          <ul>
+            <li>Promesas de premios que <strong>no recordás haber ganado</strong></li>
+            <li>Número desconocido que dice ser de alguien que conocés</li>
+            <li>Solicitudes de <strong>transferencias urgentes</strong></li>
+            <li>Links acortados (bit.ly, tinyurl) que ocultan el destino real</li>
+            <li>Pide datos de cédula o cuenta bancaria para "reclamar" algo</li>
+            <li>Errores de ortografía o redacción extraña</li>
+          </ul>
+        </div>
+
+        <div class="tip-box">
+          <h4>✅ ¿Qué hacer?</h4>
+          <ul>
+            <li>Llamá directamente al número real de esa persona (no respondas al sospechoso)</li>
+            <li>Nunca hagas clic en links de mensajes no solicitados</li>
+            <li>Recuerda: los premios reales no expiran en 2 horas</li>
+            <li>Establece una "palabra clave" familiar para emergencias reales</li>
+          </ul>
+        </div>
+
+        <h3 style="margin:20px 0 12px;">🎯 Explicación adaptada por edad</h3>
+        <div class="age-tabs" id="sm-ages">
+          <button class="age-tab active" onclick="showAge('sm','kids')">👶 Niños</button>
+          <button class="age-tab" onclick="showAge('sm','family')">👨‍👩‍👧 Familia</button>
+          <button class="age-tab" onclick="showAge('sm','senior')">👵 Adultos mayores</button>
+        </div>
+        <div id="sm-kids" class="age-content active">
+          <div class="age-block kids">
+            <strong>🍬 Para niños:</strong> ¿Alguna vez alguien te prometió algo muy bueno (dulces, juguetes, dinero) con mucha urgencia para que no pensaras? En internet pasa igual. Si un mensaje dice "¡GANASTE! ¡Haz clic ya!" — es como ese desconocido en la calle que promete regalos. <strong>Siempre contale a mamá, papá o un adulto de confianza antes de hacer clic en cualquier enlace.</strong>
+          </div>
+        </div>
+        <div id="sm-family" class="age-content">
+          <div class="age-block family">
+            <strong>🏠 Para familias:</strong> Creen una <strong>"contraseña familiar secreta"</strong> que solo ustedes conozcan. Si alguien dice ser de la familia en un número nuevo y pide dinero, primero deben decir la contraseña. Si no la saben, es una señal de alarma. Esta sencilla táctica ha evitado muchas estafas reales. Hablen abiertamente sobre estos casos — sin vergüenza ni juicio.
+          </div>
+        </div>
+        <div id="sm-senior" class="age-content">
+          <div class="age-block senior">
+            <strong>👵 Para adultos mayores:</strong> Si recibe un mensaje de alguien querido desde un número desconocido pidiendo dinero urgente, <strong>no transfiera nada todavía</strong>. Llame a ese familiar querido al número que usted ya tiene guardado. Si la persona real contesta, sabrá que el mensaje era falso. Si no contesta, llame a otro familiar. Los estafadores cuentan con que usted actúa por amor. El amor verdadero también espera 5 minutos para verificar.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- SECCIÓN 3: DEEPFAKES                   -->
+<!-- ════════════════════════════════════════ -->
+<section id="deepfake" class="section">
+  <div class="container">
+    <h2 class="section-heading">🤖 Deepfakes: Cuando ver no es creer</h2>
+    <p class="section-sub">La inteligencia artificial puede crear videos, audios e imágenes falsas que parecen completamente reales. Esta es la amenaza más nueva y sofisticada.</p>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">🧠</div>
+        <div>
+          <div class="card-title" style="color:var(--purple)">¿Qué es un Deepfake?</div>
+        </div>
+      </div>
+      <p style="line-height:1.8;margin-bottom:16px;">
+        Un <strong>deepfake</strong> es un video, audio o imagen creado o modificado usando inteligencia artificial para hacer que una persona diga o haga cosas que nunca dijo ni hizo. La palabra viene de "<em>deep learning</em>" (aprendizaje profundo) + "<em>fake</em>" (falso).
+      </p>
+      <p style="line-height:1.8;background:var(--purple-light);padding:16px;border-radius:10px;margin-bottom:16px;">
+        🎬 <strong>Ejemplo cotidiano:</strong> Imagina que alguien toma un video de tu abuela diciendo "hola" y con inteligencia artificial crea un video donde parece que ella dice "estoy en el hospital, enviame dinero urgente". Su cara, su voz, sus gestos — todo parece real. <em>Pero es completamente falso.</em>
+      </p>
+
+      <h3 style="margin-bottom:12px;color:#555;">🎬 Escenario: Video falso de un familiar en apuros</h3>
+      <div class="deepfake-card">
+        <p style="color:rgba(255,255,255,0.7);font-size:0.85rem;margin-bottom:12px;">📱 Llega un video de WhatsApp de un número desconocido...</p>
+        <div class="video-frame">
+          <div class="video-frame-inner">
+            <div class="video-glitch">👴</div>
+            <p style="color:rgba(255,255,255,0.5);font-size:0.8rem;margin-top:8px;">[Video simulado — cara de "abuelo"]</p>
+          </div>
+          <div style="position:absolute;bottom:10px;right:10px;background:rgba(255,0,0,0.7);color:white;padding:4px 10px;border-radius:4px;font-size:0.75rem;font-weight:bold;">● REC</div>
+        </div>
+        <div class="phone-dialog" style="margin-top:12px;">
+          <div class="dialog-quote">— Voz que suena exactamente como el abuelo —</div>
+          <em>"Mijo... estoy bien, no te asustes. Tuve un pequeño accidente de camino al médico. Estoy bien pero necesito que me mandes ₡200,000 para el taxi y la medicina. No le cuentes a nadie todavía, no quiero preocupar a tu mamá. Por favor, es urgente. Te lo devuelvo mañana sin falta."</em>
+        </div>
+      </div>
+
+      <div class="question-card">
+        <div class="question-text">🤔 El video parece real y la voz suena exactamente como tu abuelo. ¿Qué harías?</div>
+        <div class="options">
+          <button class="option-btn" onclick="answerQuestion(this,'wrong','df')">A) Mando el dinero de inmediato — ¡es mi abuelo, está en peligro!</button>
+          <button class="option-btn" onclick="answerQuestion(this,'correct','df')">B) Llamo DIRECTAMENTE al número que tengo guardado de mi abuelo, o a otro familiar 📞</button>
+          <button class="option-btn" onclick="answerQuestion(this,'wrong','df')">C) Respondo al mismo número del video para pedirle confirmación</button>
+        </div>
+        <div class="answer-reveal good" id="df-reveal">
+          ✅ <strong>¡Correcto!</strong> Siempre hay que verificar por un canal independiente. Llama al número de contacto real del familiar, o contacta a otro miembro de la familia. Si el "abuelo real" contesta normalmente, el video era un deepfake.
+        </div>
+      </div>
+
+      <!-- Señales para detectar deepfakes -->
+      <h3 style="margin:24px 0 16px;color:#555;">🔍 Señales para detectar un Deepfake</h3>
+      <div class="df-signals">
+        <div class="df-signal">
+          <div class="dfs-icon">👁️</div>
+          <h4>Parpadeo extraño</h4>
+          <p>Los ojos parpadean de forma poco natural o casi no parpadean.</p>
+        </div>
+        <div class="df-signal">
+          <div class="dfs-icon">💋</div>
+          <h4>Labios desincronizados</h4>
+          <p>El movimiento de la boca no coincide perfectamente con el audio.</p>
+        </div>
+        <div class="df-signal">
+          <div class="dfs-icon">✋</div>
+          <h4>Manos y dientes borrosos</h4>
+          <p>Las manos y los dientes suelen verse poco naturales o borrosos.</p>
+        </div>
+        <div class="df-signal">
+          <div class="dfs-icon">🌀</div>
+          <h4>Bordes del rostro</h4>
+          <p>Contornos del pelo o la cara que parecen "pegados" o borrosos.</p>
+        </div>
+        <div class="df-signal">
+          <div class="dfs-icon">💡</div>
+          <h4>Iluminación inconsistente</h4>
+          <p>La luz no cae igual en el rostro y en el fondo del video.</p>
+        </div>
+        <div class="df-signal">
+          <div class="dfs-icon">🎭</div>
+          <h4>Expresiones rígidas</h4>
+          <p>Las emociones se ven poco naturales o el rostro parece "plástico".</p>
+        </div>
+      </div>
+
+      <div class="alert-signals" style="margin-top:20px;">
+        <h4>🚨 Señales de contexto (más importantes que las visuales):</h4>
+        <ul>
+          <li>El video llega de un <strong>número desconocido</strong> aunque muestre una cara conocida</li>
+          <li>Pide <strong>dinero o datos</strong> y pide que no lo cuentes a nadie</li>
+          <li>La situación descrita es inusual o no encaja con la personalidad de esa persona</li>
+          <li>Insiste en la urgencia para evitar que verifiques</li>
+        </ul>
+      </div>
+
+      <div class="tip-box">
+        <h4>✅ ¿Qué hacer?</h4>
+        <ul>
+          <li>Establece una palabra clave secreta con tu familia para emergencias reales</li>
+          <li>Ante cualquier video urgente, siempre llama al número real de esa persona</li>
+          <li>Desconfía de cualquier solicitud de dinero que pida "no contarle a nadie"</li>
+          <li>Usa herramientas online de detección de deepfakes (FakeCatcher de Intel, Reality Defender)</li>
+        </ul>
+      </div>
+
+      <h3 style="margin:20px 0 12px;">🎯 Explicación adaptada por edad</h3>
+      <div class="age-tabs" id="df-ages">
+        <button class="age-tab active" onclick="showAge('df','kids')">👶 Niños</button>
+        <button class="age-tab" onclick="showAge('df','family')">👨‍👩‍👧 Familia</button>
+        <button class="age-tab" onclick="showAge('df','senior')">👵 Adultos mayores</button>
+      </div>
+      <div id="df-kids" class="age-content active">
+        <div class="age-block kids">
+          <strong>🎭 Para niños:</strong> ¿Conoces las máscaras de Halloween? Los deepfakes son como máscaras digitales super realistas. Una computadora puede poner la cara y la voz de tu abuelo, tu maestra o incluso un superhéroe en cualquier video. No todo lo que ves en internet es real, aunque parezca de verdad. Si ves un video muy raro de alguien que conocés, <strong>cuéntale a un adulto antes de creerlo o compartirlo.</strong>
+        </div>
+      </div>
+      <div id="df-family" class="age-content">
+        <div class="age-block family">
+          <strong>🏠 Para familias:</strong> Hablen sobre los deepfakes con sus hijos adolescentes — ellos también pueden ser víctimas o testigos. Expliquen que la tecnología avanza rápido y que hoy es posible falsificar caras y voces. <strong>Creen una "palabra de emergencia familiar"</strong> que solo la familia conoce, y que cualquier persona que pida ayuda urgente (especialmente dinero) debe usar esa palabra para ser creíble.
+        </div>
+      </div>
+      <div id="df-senior" class="age-content">
+        <div class="age-block senior">
+          <strong>👵 Para adultos mayores:</strong> Hoy la tecnología puede crear videos falsos con la cara y voz de personas reales — incluso de sus seres queridos. Si recibe un video de un familiar pidiendo ayuda urgente desde un número desconocido, <strong>no se preocupe todavía</strong>. Respire, y llame al número que tiene guardado de esa persona. Si está bien, el video era falso. Si un niño o joven de la familia puede acompañarle cuando vea videos extraños, mucho mejor.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- SECCIÓN 4: GUÍA DE PROTECCIÓN          -->
+<!-- ════════════════════════════════════════ -->
+<section id="guia" class="section">
+  <div class="container">
+    <h2 class="section-heading">🛡️ Mini Guía de Protección Familiar</h2>
+    <p class="section-sub">Estas son las prácticas más importantes que toda la familia debe conocer. Simples, efectivas y para todos.</p>
+
+    <div class="prot-grid">
+      <div class="prot-card" style="background:#e8f0fe;border-color:var(--sky)">
+        <div style="font-size:2.4rem;">🔐</div>
+        <h3>Contraseñas fuertes y únicas</h3>
+        <ul>
+          <li>Usa una contraseña diferente para cada cuenta importante</li>
+          <li>Combina letras, números y símbolos</li>
+          <li>No uses tu nombre, fecha de nacimiento ni "1234"</li>
+          <li>Considera un gestor de contraseñas (Bitwarden, es gratis)</li>
+        </ul>
+      </div>
+      <div class="prot-card" style="background:#d4f5ec;border-color:var(--mint)">
+        <div style="font-size:2.4rem;">📲</div>
+        <h3>Verificación en dos pasos (2FA)</h3>
+        <ul>
+          <li>Actívala en tu banco, correo y redes sociales</li>
+          <li>Agrega una segunda capa: código SMS o app autenticadora</li>
+          <li>Aunque roben tu contraseña, no podrán entrar sin el segundo código</li>
+          <li>NUNCA compartas ese segundo código con nadie por teléfono</li>
+        </ul>
+      </div>
+      <div class="prot-card" style="background:#fde8e3;border-color:var(--coral)">
+        <div style="font-size:2.4rem;">⏸️</div>
+        <h3>Desconfiar de la urgencia</h3>
+        <ul>
+          <li>La urgencia es la herramienta #1 de los estafadores</li>
+          <li>Ante cualquier mensaje urgente: PAUSA antes de actuar</li>
+          <li>Los negocios y bancos reales no desaparecen en "5 minutos"</li>
+          <li>Tomá 10 minutos para verificar — siempre vale la pena</li>
+        </ul>
+      </div>
+      <div class="prot-card" style="background:#ede9ff;border-color:var(--purple)">
+        <div style="font-size:2.4rem;">👶</div>
+        <h3>Educación digital para niños</h3>
+        <ul>
+          <li>Enseñales a preguntar antes de hacer clic en cualquier enlace</li>
+          <li>Que sepan que jamás deben compartir su contraseña con amigos</li>
+          <li>Que cuenten si alguien en internet les pide información personal</li>
+          <li>Hablen sin tabú sobre lo que ven en internet</li>
+        </ul>
+      </div>
+      <div class="prot-card" style="background:#fff8e7;border-color:var(--gold)">
+        <div style="font-size:2.4rem;">📵</div>
+        <h3>No compartir datos sensibles</h3>
+        <ul>
+          <li>Tu banco NUNCA pide contraseña por correo o teléfono</li>
+          <li>El CVV de tu tarjeta es secreto — ni al banco real se lo digas</li>
+          <li>El código SMS que llega es tuyo — no se lo des a nadie</li>
+          <li>Comparte solo lo mínimo necesario en redes sociales</li>
+        </ul>
+      </div>
+      <div class="prot-card" style="background:#f0f4ff;border-color:#4a6fa5">
+        <div style="font-size:2.4rem;">🔍</div>
+        <h3>Verificar siempre por otro canal</h3>
+        <ul>
+          <li>¿Correo del banco? Llama al número oficial de tu tarjeta</li>
+          <li>¿Mensaje de familiar en número nuevo? Llama al número guardado</li>
+          <li>¿Video urgente? Contacta a la persona directamente</li>
+          <li>¿Premio inesperado? No existe — ignóralo</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:24px;border-top:4px solid var(--gold)">
+      <div class="card-header">
+        <div class="card-icon">📋</div>
+        <div>
+          <div class="card-title" style="color:#b7860b;">Lista de emergencia familiar</div>
+          <div class="text-small">Guarda estos números y ponlos en un lugar visible en casa</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+        <div style="background:#fff8e7;padding:16px;border-radius:10px;">
+          <div style="font-size:1.5rem;margin-bottom:6px;">🏦</div>
+          <strong>Mi banco (reverso de tarjeta)</strong><br/>
+          <div style="margin-top:8px;padding:8px;background:#fff;border-radius:8px;color:var(--gray);font-size:0.85rem;">Escribe aquí el número ___________</div>
+        </div>
+        <div style="background:#e8f0fe;padding:16px;border-radius:10px;">
+          <div style="font-size:1.5rem;margin-bottom:6px;">👮</div>
+          <strong>Delitos cibernéticos</strong><br/>
+          <div style="margin-top:8px;padding:8px;background:#fff;border-radius:8px;color:var(--gray);font-size:0.85rem;">En CR: OIJ 800-8000-645</div>
+        </div>
+        <div style="background:#d4f5ec;padding:16px;border-radius:10px;">
+          <div style="font-size:1.5rem;margin-bottom:6px;">👨‍👩‍👧</div>
+          <strong>Familiar de confianza</strong><br/>
+          <div style="margin-top:8px;padding:8px;background:#fff;border-radius:8px;color:var(--gray);font-size:0.85rem;">Escribe aquí el número ___________</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- SECCIÓN 5: QUIZ                        -->
+<!-- ════════════════════════════════════════ -->
+<section id="quiz" class="section">
+  <div class="container">
+    <h2 class="section-heading">🎯 Quiz de Evaluación</h2>
+    <p class="section-sub">10 preguntas sobre situaciones reales. ¿Estás listo para poner a prueba lo aprendido?</p>
+    <div class="card" id="quiz-container">
+      <div class="quiz-progress">
+        <div class="quiz-bar" id="quiz-bar"></div>
+      </div>
+      <div id="quiz-area"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!-- SECCIÓN 6: CIERRE                      -->
+<!-- ════════════════════════════════════════ -->
+<section id="cierre" class="section">
+  <div class="container">
+    <div class="closing-hero">
+      <div style="font-size:4rem;margin-bottom:16px;">💚</div>
+      <h2>Todos podemos aprender a protegernos</h2>
+      <p>
+        La ciberseguridad no es solo para expertos en tecnología. Es para cada persona que usa un teléfono, recibe correos o tiene seres queridos conectados al mundo digital. <strong>Y eso nos incluye a todos.</strong>
+      </p>
+      <p>
+        No importa si tenés 8 años o 80. No importa si estudiaste tecnología o no. Lo que importa es que cada vez que recibas algo sospechoso, recuerdes estas tres palabras:
+      </p>
+      <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin:24px 0;">
+        <div style="background:rgba(253,203,110,0.2);border:2px solid var(--gold);padding:16px 28px;border-radius:12px;">
+          <div style="font-size:2rem;">⏸️</div>
+          <div style="font-family:'Fredoka One',cursive;font-size:1.4rem;color:var(--gold)">PAUSA</div>
+        </div>
+        <div style="background:rgba(0,184,148,0.2);border:2px solid var(--mint);padding:16px 28px;border-radius:12px;">
+          <div style="font-size:2rem;">🤔</div>
+          <div style="font-family:'Fredoka One',cursive;font-size:1.4rem;color:var(--mint)">PIENSA</div>
+        </div>
+        <div style="background:rgba(26,115,232,0.2);border:2px solid #6bb3ff;padding:16px 28px;border-radius:12px;">
+          <div style="font-size:2rem;">📞</div>
+          <div style="font-family:'Fredoka One',cursive;font-size:1.4rem;color:#6bb3ff">VERIFICA</div>
+        </div>
+      </div>
+      <div class="closing-pillars">
+        <div class="closing-pillar">
+          <div class="cp-icon">👨‍👩‍👧</div>
+          <p>Habla con tu familia sobre estos temas. Sin miedo, con confianza.</p>
+        </div>
+        <div class="closing-pillar">
+          <div class="cp-icon">🔄</div>
+          <p>Comparte lo que aprendiste. Proteger a otros también te protege a ti.</p>
+        </div>
+        <div class="closing-pillar">
+          <div class="cp-icon">📚</div>
+          <p>Sigue aprendiendo. Los estafadores evolucionan, nosotros también.</p>
+        </div>
+        <div class="closing-pillar">
+          <div class="cp-icon">💪</div>
+          <p>El error no es haber sido víctima. El error es no aprender de ello.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="border-top:4px solid var(--mint);text-align:center;padding:32px;">
+      <div style="font-size:2.5rem;margin-bottom:12px;">🎓</div>
+      <h3 style="font-family:'Fredoka One',cursive;font-size:1.4rem;margin-bottom:12px;color:var(--dark)">¡Felicitaciones por completar la simulación!</h3>
+      <p style="color:var(--gray);line-height:1.8;max-width:560px;margin:0 auto 20px;">
+        Dedicaste tiempo a aprender algo que realmente importa. Cada persona que conoce estas señales de alerta es una persona menos vulnerable — y una familia más segura.
+      </p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button class="btn" onclick="showSection('quiz');scrollTo(0,0)">🎯 Hacer el Quiz</button>
+        <button class="btn" style="background:var(--mint);" onclick="showSection('intro');scrollTo(0,0)">🔁 Volver al inicio</button>
+      </div>
+    </div>
+
+    <div class="firma">
+      <div class="firma-logo">🛡️ Espacio <span>Ciberseguro</span></div>
+      <p>Educación digital accesible para toda la familia · Prevención · Pensamiento crítico · Seguridad</p>
+      <p style="margin-top:6px;font-size:0.8rem;color:#aaa;">"Porque en el mundo digital, la información es nuestra mejor protección."</p>
+    </div>
+  </div>
+</section>
+
+<script>
+// ══════════════════════════════════════════
+// NAVEGACIÓN
+// ══════════════════════════════════════════
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const tabs = ['intro','attacks','deepfake','guia','quiz','cierre'];
+  const idx = tabs.indexOf(id);
+  if (idx >= 0) document.querySelectorAll('.nav-tab')[idx].classList.add('active');
+}
+
+function showAttack(attack) {
+  document.querySelectorAll('.attack-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.attack-btn').forEach(b => b.classList.remove('active'));
+  const panel = document.getElementById('panel-' + attack);
+  if (panel) panel.classList.add('active');
+  document.querySelector(`[data-attack="${attack}"]`).classList.add('active');
+}
+
+function showAge(prefix, age) {
+  const container = document.getElementById(prefix + '-ages');
+  container.querySelectorAll('.age-tab').forEach(t => t.classList.remove('active'));
+  const map = { kids: 'Niños', family: 'Familia', senior: 'Adultos' };
+  container.querySelectorAll('.age-tab').forEach(t => {
+    if (t.textContent.includes(map[age].substring(0,4))) t.classList.add('active');
+  });
+  ['kids','family','senior'].forEach(a => {
+    const el = document.getElementById(prefix + '-' + a);
+    if (el) el.classList.toggle('active', a === age);
+  });
+}
+
+// ══════════════════════════════════════════
+// PREGUNTAS INTERACTIVAS
+// ══════════════════════════════════════════
+function answerQuestion(btn, result, prefix) {
+  const parent = btn.closest('.options');
+  parent.querySelectorAll('.option-btn').forEach(b => {
+    b.disabled = true;
+    b.classList.add('neutral-reveal');
+  });
+  btn.classList.remove('neutral-reveal');
+  btn.classList.add(result === 'correct' ? 'correct' : 'wrong');
+  const reveal = document.getElementById(prefix + '-reveal');
+  if (reveal) {
+    reveal.classList.add('show');
+    reveal.classList.add(result === 'correct' ? 'good' : 'bad');
+    if (result !== 'correct') {
+      reveal.innerHTML = '❌ <strong>Esa no es la opción más segura.</strong> Los estafadores cuentan con que actuemos rápido por miedo. La respuesta correcta siempre implica pausar y verificar por un canal independiente.';
+    }
+  }
+}
+
+// ══════════════════════════════════════════
+// QUIZ
+// ══════════════════════════════════════════
+const questions = [
+  {
+    q: "Recibes un correo del 'banco' diciendo que tu cuenta será cerrada en 24 horas si no ingresas tus datos. El dominio del correo es banco-seguro-cl1ente.com. ¿Qué haces?",
+    opts: ["A) Entro al link rápido para no perder mi cuenta", "B) Llamo al número oficial del banco (reverso de tarjeta) sin tocar el correo", "C) Respondo el correo preguntando si es real"],
+    correct: 1,
+    feedback: "✅ ¡Correcto! El banco real nunca cierra cuentas por correo electrónico. Llama siempre al número oficial. El dominio 'cl1ente' con número 1 en lugar de letra 'i' es una señal clara de fraude."
+  },
+  {
+    q: "Un número desconocido te llama diciendo ser del soporte del banco. Te piden el código de 6 dígitos que acaba de llegar a tu celular para 'verificar tu identidad'. ¿Qué haces?",
+    opts: ["A) Doy el código porque parece urgente y profesional", "B) Cuelgo inmediatamente y llamo yo al banco", "C) Les pido su nombre y número de empleado primero"],
+    correct: 1,
+    feedback: "✅ ¡Exacto! Ningún banco pedirá el código OTP/SMS por teléfono. Ese código es como la llave de tu caja fuerte — solo tuya. Cuelga y llama tú al banco."
+  },
+  {
+    q: "Recibes un SMS que dice: '🎉 ¡GANASTE $1,000! Haz clic aquí: bit.ly/premio-ahora para reclamar ANTES DE 2 HORAS.' ¿Qué haces?",
+    opts: ["A) Hago clic rápido, no quiero perder el premio", "B) Ignoro o elimino el mensaje — es claramente una estafa", "C) Reenvío el link a un amigo para que lo revise primero"],
+    correct: 1,
+    feedback: "✅ ¡Bien! Los premios legítimos no tienen vencimiento de 2 horas ni llegan por SMS aleatorio. Los links acortados (bit.ly) ocultan el destino real. Ignora y elimina."
+  },
+  {
+    q: "Tu abuela te dice que recibió una llamada de alguien que decía ser tu tío pidiéndole dinero urgente. La voz sonaba exactamente igual. ¿Qué debería hacer tu abuela?",
+    opts: ["A) Hacer la transferencia porque la voz era idéntica", "B) Llamar al número real del tío que tiene guardado en su teléfono", "C) Pedir el número de cuenta y esperar confirmación por correo"],
+    correct: 1,
+    feedback: "✅ ¡Perfecto! La tecnología deepfake puede clonar voces con solo segundos de audio. Siempre verificar llamando al número guardado de la persona — no al número sospechoso."
+  },
+  {
+    q: "¿Cuál de estas contraseñas es más segura?",
+    opts: ["A) 123456 o 'contraseña'", "B) Tu fecha de nacimiento (ej: 15071985)", "C) G7#kL!p2@qW9 (mezcla aleatoria)"],
+    correct: 2,
+    feedback: "✅ ¡Correcto! Las contraseñas predecibles (fechas, nombres, secuencias numéricas) son las primeras que prueban los atacantes. Una contraseña fuerte mezcla letras, números y símbolos de forma aleatoria."
+  },
+  {
+    q: "Recibes un mensaje de WhatsApp de un número desconocido que dice ser tu mamá con 'número nuevo'. Pide que le transfieras dinero urgente y que no le cuentes a papá. ¿Qué haces?",
+    opts: ["A) Transfiero el dinero porque suena como mamá", "B) Llamo al número real de mamá que tengo guardado para verificar", "C) Le pregunto una pregunta personal al número nuevo para 'verificar'"],
+    correct: 1,
+    feedback: "✅ ¡Bien! La frase 'no le cuentes a nadie' es una señal de alarma clásica. Verifica siempre llamando al número real que tienes guardado — nunca respondas al número sospechoso."
+  },
+  {
+    q: "¿Qué es la verificación en dos pasos (2FA)?",
+    opts: ["A) Tener dos contraseñas iguales en la misma cuenta", "B) Una segunda capa de seguridad (código SMS o app) además de la contraseña", "C) Verificar tu correo dos veces al día"],
+    correct: 1,
+    feedback: "✅ ¡Exacto! El 2FA agrega una segunda barrera: aunque roben tu contraseña, no pueden acceder sin el código adicional. Actívalo en tu banco, correo y redes sociales."
+  },
+  {
+    q: "Ves un video en redes sociales donde un famoso recomienda invertir dinero en una app. La promesa es duplicar tu dinero en 30 días. ¿Cuál es la señal más importante de que puede ser un deepfake o fraude?",
+    opts: ["A) Que el video tenga muchos 'likes'", "B) Que prometa ganancias extraordinarias sin riesgo — algo imposible en inversiones reales", "C) Que esté subtitulado en otro idioma"],
+    correct: 1,
+    feedback: "✅ ¡Correcto! 'Duplicar dinero sin riesgo' no existe. Es la promesa clásica de estafa de inversión. Además, los deepfakes se usan frecuentemente para este tipo de fraudes con celebridades."
+  },
+  {
+    q: "Un niño de 10 años recibe un mensaje en su juego en línea de alguien que dice ser su amigo del colegio, pero desde una cuenta nueva. Le pide que comparta su contraseña del juego. ¿Qué debe hacer el niño?",
+    opts: ["A) Dar la contraseña porque parece su amigo", "B) No dar la contraseña y contarle a mamá o papá lo antes posible", "C) Cambiar la contraseña y luego dársela al 'amigo'"],
+    correct: 1,
+    feedback: "✅ ¡Excelente! Las contraseñas son secretas — ni los amigos reales las deben pedir. El niño debe contarle a un adulto de confianza. Puede que la cuenta del amigo haya sido hackeada o que sea un engaño."
+  },
+  {
+    q: "Recibes un correo de 'Netflix' diciendo que tu pago falló y debes actualizar tu tarjeta en las próximas 48 horas o perderás tu cuenta. ¿Cuál es la acción correcta?",
+    opts: ["A) Hago clic en el link del correo y actualizo mis datos de tarjeta", "B) Ignoro el correo y entro directamente a netflix.com escribiéndolo en el navegador", "C) Reenvío el correo al soporte de Netflix desde ese mismo correo"],
+    correct: 1,
+    feedback: "✅ ¡Perfecto! Nunca uses links de correos sobre pagos. Ve siempre directamente al sitio oficial escribiéndolo en el navegador. Allí verás si realmente hay un problema con tu cuenta."
+  }
+];
+
+let currentQ = 0, score = 0, answered = false;
+const answers = [];
+
+function renderQuiz() {
+  const area = document.getElementById('quiz-area');
+  if (currentQ >= questions.length) {
+    showResults(); return;
+  }
+  const q = questions[currentQ];
+  const bar = document.getElementById('quiz-bar');
+  bar.style.width = ((currentQ / questions.length) * 100) + '%';
+
+  area.innerHTML = `
+    <div class="quiz-num">Pregunta ${currentQ + 1} de ${questions.length}</div>
+    <div class="quiz-q">${q.q}</div>
+    <div class="quiz-opts">
+      ${q.opts.map((o, i) => `<button class="quiz-opt" onclick="selectAnswer(${i})">${o}</button>`).join('')}
+    </div>
+    <div class="quiz-feedback" id="qfb"></div>
+    <div class="quiz-nav">
+      <button class="btn" id="qnext" style="display:none;" onclick="nextQuestion()">${currentQ < questions.length - 1 ? 'Siguiente pregunta →' : 'Ver resultados 🎯'}</button>
+    </div>
+  `;
+  answered = false;
+}
+
+function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+  const q = questions[currentQ];
+  const opts = document.querySelectorAll('.quiz-opt');
+  const fb = document.getElementById('qfb');
+  opts.forEach(o => o.disabled = true);
+
+  if (idx === q.correct) {
+    opts[idx].classList.add('q-correct');
+    score++;
+    answers.push(true);
+    fb.className = 'quiz-feedback show ok';
+    fb.innerHTML = q.feedback;
+  } else {
+    opts[idx].classList.add('q-wrong');
+    opts[q.correct].classList.add('q-correct');
+    answers.push(false);
+    fb.className = 'quiz-feedback show nok';
+    fb.innerHTML = `❌ <strong>No es la opción más segura.</strong> ${q.feedback}`;
+  }
+  document.getElementById('qnext').style.display = 'inline-block';
+}
+
+function nextQuestion() {
+  currentQ++;
+  renderQuiz();
+}
+
+function showResults() {
+  const bar = document.getElementById('quiz-bar');
+  bar.style.width = '100%';
+  const area = document.getElementById('quiz-area');
+  let emoji, level, levelColor, msg;
+  if (score <= 3) {
+    emoji = '⚠️'; level = 'Riesgo alto'; levelColor = '#d63031';
+    msg = 'No te preocupes — el primer paso es aprender. Repasa las simulaciones y vuelve a intentar el quiz. Tu familia te necesita informado.';
+  } else if (score <= 7) {
+    emoji = '🟡'; level = 'Nivel medio'; levelColor = '#f39c12';
+    msg = '¡Buen progreso! Ya tienes las bases. Repasa los temas donde tuviste dudas y comparte lo aprendido con tu familia.';
+  } else {
+    emoji = '🟢'; level = '¡Buen nivel!'; levelColor = '#00b894';
+    msg = '¡Excelente! Tienes muy buenos hábitos de ciberseguridad. Ahora comparte este conocimiento con tus seres queridos.';
+  }
+
+  const breakdown = questions.map((q, i) =>
+    `<div class="sba"><span>${answers[i] ? '✅' : '❌'} Pregunta ${i+1}</span><span style="color:${answers[i]?'#00b894':'#d63031'};font-weight:700">${answers[i]?'Correcta':'Incorrecta'}</span></div>`
+  ).join('');
+
+  area.innerHTML = `
+    <div class="score-card">
+      <span class="score-emoji">${emoji}</span>
+      <div class="score-big" style="color:${levelColor}">${score}/10</div>
+      <div class="score-label">respuestas correctas</div>
+      <div class="score-level" style="background:${levelColor}20;color:${levelColor};border:2px solid ${levelColor}">${emoji} ${level}</div>
+      <p style="max-width:500px;margin:0 auto 28px;line-height:1.7;color:#555;">${msg}</p>
+      <div class="score-breakdown">${breakdown}</div>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button class="btn" onclick="restartQuiz()">🔁 Repetir quiz</button>
+        <button class="btn" style="background:var(--mint);" onclick="showSection('cierre');scrollTo(0,0)">💚 Ver cierre</button>
+      </div>
+    </div>
+  `;
+}
+
+function restartQuiz() {
+  currentQ = 0; score = 0; answered = false; answers.length = 0;
+  renderQuiz();
+}
+
+// Initialize quiz when section becomes active
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    if (tab.textContent.includes('Quiz')) renderQuiz();
+  });
+});
+
+// Init
+renderQuiz();
+</script>
+</body>
+</html>
